@@ -328,18 +328,4 @@ class _PutzListeViewState extends State<PutzListeView> {
       ],
     );
   }
-
-  Widget _authenticationFailedDialog() {
-    return AlertDialog(
-      title: Text('Etwas ist schief gelaufen, bitte melde Dich nochmal an!'),
-      actions: [
-        TextButton(
-            onPressed: () {
-              widget.logout();
-              Navigator.of(context).pop();
-            },
-            child: Text("OK")),
-      ],
-    );
-  }
 }*/
