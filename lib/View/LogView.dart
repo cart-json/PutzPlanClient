@@ -1,13 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:putzplan/Model/Log.dart';
-import 'LoadingScreen.dart';
-import '../Model/SubTask.dart';
 
 class LogView extends StatelessWidget {
-  final Map<int, List<Map<int, Map<String, Object>>>> weekdayLogs;
+  final Map<int, List<Map>> weekdayLogs;
 
-  LogView({required this.weekdayLogs});
+  LogView({this.weekdayLogs});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +26,7 @@ class LogView extends StatelessWidget {
           if (weekdayLogs[i] == null) {
             return SizedBox.shrink();
           } else {
-            return _buildWeekdayRow(i, weekdayLogs[i]!);
+            return _buildWeekdayRow(i, weekdayLogs[i]);
           }
         });
   }
@@ -68,7 +65,7 @@ class LogView extends StatelessWidget {
             scrollDirection: Axis.vertical,
             padding: const EdgeInsets.all(2),
             itemBuilder: (BuildContext _context, int i) {
-              return _buildLogRow(logs[i]!);
+              return _buildLogRow(logs[i]);
             }),
       ],
     ));
@@ -78,11 +75,12 @@ class LogView extends StatelessWidget {
   Widget _buildLogRow(Map log) {
     return Card(
         child: ListTile(
-            title: Text(log['user'] + ' hat "' + log['task'] + '" erledigt'),
+            title:
+                Text(log['userName'] + ' hat "' + log['task'] + '" erledigt'),
             subtitle: Text(log['mainTask'] +
                 ' ' +
-                log['time']['hour'] +
+                log['time']['hour'].toString().padLeft(2, '0') +
                 ':' +
-                log['time']['hour'])));
+                log['time']['minute'].toString().padLeft(2, '0'))));
   }
 }

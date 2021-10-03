@@ -86,16 +86,36 @@ class Model {
       "userName": "Leo"
     }
   ];
-  Future getData() {
-    return Future.delayed(const Duration(seconds: 0), () => testData);
+
+  Future getData() async {
+    var data = await ServerQueries.fetchData();
+    return data;
   }
 
   Future getLogs() {
-    return Future.delayed(const Duration(seconds: 2), () => testLog);
+    var logs = new List.from(testLog);
+    Map<int, List<Map>> weekList = {};
+    logs.forEach((element) {
+      var time = DateTime.parse(element['time'] ?? '');
+      element['time'] = {
+        'weekday': time.weekday - 1,
+        'hour': time.hour,
+        'minute': time.minute
+      };
+      int weekday = element['time']['weekday'];
+      if (weekList[weekday] == null) {
+        weekList[weekday] = [];
+      }
+      weekList[weekday]?.add(element);
+    });
+    return Future.delayed(const Duration(seconds: 2), () => weekList);
+  }
+
+  Future update(int taskID) {
+    return ServerQueries.update(taskID);
   }
 
   Future authenticate() async {
-    return Future.delayed(const Duration(seconds: 0), () => false);
     final prefs = await SharedPreferences.getInstance();
     final authKey = prefs.getString('authKey') ?? '0';
     if (authKey != '0') {
@@ -109,7 +129,6 @@ class Model {
   }
 
   Future evaluateAccessData(username, password) async {
-    return Future.delayed(const Duration(seconds: 2), () => false);
     var replyJson = await ServerQueries.logIn(username, password);
     if (!replyJson['failed'] ?? true) {
       var authKey = replyJson['authKey'] ?? '0';

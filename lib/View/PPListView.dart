@@ -5,44 +5,48 @@ import 'RefreshList.dart';
 
 class PPListView extends StatefulWidget {
   final Function logout;
-  final Function setAbsent;
+  final Function setPresence;
   final Function showLogs;
   final Future<void> Function() refresh;
   final Function setTaskDone;
-  final Map<String, dynamic> data;
+  Map<String, dynamic> data;
 
   PPListView(
-      {required Key key,
-      required this.logout,
-      required this.setAbsent,
-      required this.showLogs,
-      required this.refresh,
-      required this.setTaskDone,
-      required this.data})
+      {Key key,
+      this.logout,
+      this.setPresence,
+      this.showLogs,
+      this.refresh,
+      this.setTaskDone,
+      this.data})
       : super(key: key);
+
+  setData(data) {
+    this.data = data;
+  }
 
   @override
   _PPListViewState createState() => _PPListViewState();
 }
 
 class _PPListViewState extends State<PPListView> {
-  late String title;
-  late PageController _controller;
-  late Map<String, dynamic> currentUser;
+  String title;
+  PageController _controller;
+  Map<String, dynamic> currentUser;
 
   initState() {
     super.initState();
-    currentUser = widget.data['currentUser']!;
-    title = currentUser['mainTask']!;
+    currentUser = widget.data['currentUser'];
+    title = currentUser['mainTask'];
     _controller = PageController(
       initialPage: 0,
     );
   }
 
   Widget build(BuildContext context) {
-    List<Map> subTasks = widget.data['subTasks']!;
-    List<Map> users = widget.data['users']!;
-    List<Map> lastWeek = widget.data['lastWeek'];
+    List subTasks = widget.data['subTasks'];
+    List users = widget.data['users'];
+    List lastWeek = widget.data['lastWeek'];
     return Scaffold(
         appBar: ListAppBar(
           () => goAbsent(currentUser['id']),
@@ -57,19 +61,22 @@ class _PPListViewState extends State<PPListView> {
           onPageChanged: _setTitle,
           children: [
             RefreshList(
-              refresh: widget.refresh,
-              colored: (row) => row['mainTask'] == currentUser['mainTask'],
-              list: subTasks!,
-              key: UniqueKey(),
-              function: (id, sns) => widget.setTaskDone(id),
-            ),
+                refresh: widget.refresh,
+                colored: (row) => row['mainTask'] == currentUser['mainTask'],
+                list: subTasks,
+                key: UniqueKey(),
+                function: (Map<String, dynamic> response) =>
+                    widget.setTaskDone(response),
+                dialog: (String text) => "Für " + text + " erklären?"),
             RefreshList(
-              refresh: widget.refresh,
-              colored: (row) => !row['absent'],
-              list: users,
-              key: UniqueKey(),
-              function: (absent, id) => widget.setAbsent(id, absent),
-            ),
+                refresh: widget.refresh,
+                colored: (row) => !row['absent'],
+                list: users,
+                key: UniqueKey(),
+                function: (Map<String, dynamic> response) =>
+                    widget.setPresence(response),
+                dialog: (String text1, String text2) =>
+                    text1 + " für " + text2 + " erklären?"),
             RefreshList(
               refresh: widget.refresh,
               colored: (row) => row['points'] >= 20,
@@ -78,6 +85,12 @@ class _PPListViewState extends State<PPListView> {
             ),
           ],
         ));
+  }
+
+  rebuild(data) {
+    this.setState(() {
+      data = data;
+    });
   }
 
   void _setTitle(int page) {
@@ -98,6 +111,6 @@ class _PPListViewState extends State<PPListView> {
   }
 
   void goAbsent(bool absent) {
-    widget.setAbsent(currentUser['id'], absent);
+    widget.setPresence(currentUser['id'], absent);
   }
 }

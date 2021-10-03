@@ -4,16 +4,18 @@ import 'package:flutter/material.dart';
 class RefreshList extends StatelessWidget {
   final Future<void> Function() refresh;
   final Function(Map<String, dynamic>) colored;
-  final void Function(dynamic, dynamic)? function;
+  final Function function;
+  final Function dialog;
 
-  final List<Map> list;
+  final List list;
 
   const RefreshList(
-      {required Key key,
-      required this.refresh,
-      required this.colored,
-      required this.list,
-      this.function})
+      {Key key,
+      this.refresh,
+      this.colored,
+      this.list,
+      this.function,
+      this.dialog})
       : super(key: key);
 
   @override
@@ -42,6 +44,6 @@ class RefreshList extends StatelessWidget {
                   TextStyle(color: (colored(row) ? Colors.black : Colors.red)),
             ),
             subtitle: Text(row['mainTask']),
-            onTap: () => function!));
+            onTap: () => function != null ? function(row) : {}));
   }
 }

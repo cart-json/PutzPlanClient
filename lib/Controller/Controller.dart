@@ -8,20 +8,24 @@ class Controller extends StatefulWidget {
   _ControllerState createState() => _ControllerState();
 }
 
-//###################################################################################
-//hier ist der relevante Code:
-
 class _ControllerState extends State<Controller> {
-  late View view;
-  late Model model;
+  View view;
+  Model model;
 
-  late Future authenticated;
-  late Future listData;
-  late Future loggedOut;
+  Future authenticated;
+  Future listData;
+  Future loggedOut;
+  Future logs;
 
   @override
   void initState() {
-    view = new View(context, setAbsent, fetchLogs, refresh, update, logout);
+    view = new View(
+        context: context,
+        setPresence: setPresence,
+        showLogs: showLogs,
+        refresh: refresh,
+        logout: logout,
+        setTaskDone: setTaskDone);
     model = new Model();
     authenticated = model.authenticate();
     super.initState();
@@ -30,7 +34,7 @@ class _ControllerState extends State<Controller> {
   @override
   Widget build(BuildContext context) {
     return controllerFuture(authenticated, 'trying to authenticate...', (data) {
-      if (data) {
+      if (!data) {
         return view.buildLogInScreen(evaluateAccessData);
       } else {
         listData = model.getData();
@@ -46,7 +50,8 @@ class _ControllerState extends State<Controller> {
       authenticated = model.evaluateAccessData(username, password);
       this.didChangeDependencies();
     });
-    if (await authenticated) {
+    bool auth = await authenticated;
+    if (auth) {
       view.buildDialog("Benutzername oder Passwort sind falsch!");
     }
   }
@@ -73,21 +78,40 @@ class _ControllerState extends State<Controller> {
         });
   }
 
-  Future<void> refresh() async {}
+  Future<void> refresh() async {
+    listData = model.getData();
+    setState(() {
+      this.build(context);
+    });
+  }
 
-  Future fetchLogs() {
-    return Future.delayed(const Duration(seconds: 0), () => 'testData');
+  showLogs() {
+    logs = model.getLogs();
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return controllerFuture(
+          logs, 'loading data...', (data) => view.buildLogScreen(data));
+    }));
   }
 
   Future fetchData() {
     return Future.delayed(const Duration(seconds: 0), () => 'testData');
   }
 
-  setAbsent(int userID, bool absent) {
-    print(userID.toString() + absent.toString());
+  setPresence(Map<String, dynamic> request) {
+    print(request['id'].toString() +
+        ' goes ' +
+        (request['absent'] ? 'present' : 'absent'));
   }
 
-  update(int taskID) {
-    print(taskID.toString());
+  setTaskDone(Map<String, dynamic> request) async {
+    var result = await model.update(request['id']);
+    if (result['failed']) {
+      view.buildDialog(
+          'Something went wrong, please try again or contact out customer support');
+    } else {
+      this.refresh();
+    }
+
+    print(request['id'].toString() + ' is done');
   }
 }

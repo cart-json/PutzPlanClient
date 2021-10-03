@@ -6,7 +6,7 @@ class ConfirmationDialog extends StatelessWidget {
   final String text;
 
   const ConfirmationDialog(
-      {required Key key, required this.function, required this.text})
+      {Key key, this.function, this.text})
       : super(key: key);
 
   @override

@@ -32,9 +32,6 @@ class Log {
         weekList[weekday] = [];
       }
       weekList[weekday]?.add(element);
-      print(element);
-      print(weekday);
-      print(weekList[weekday]);
     });
     return weekList;
   }
