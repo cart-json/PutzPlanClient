@@ -9,7 +9,7 @@ class PPListView extends StatefulWidget {
   final Function showLogs;
   final Future<void> Function() refresh;
   final Function setTaskDone;
-  Map<String, dynamic> data;
+  final Map<String, dynamic> data;
 
   PPListView(
       {Key key,
@@ -20,10 +20,6 @@ class PPListView extends StatefulWidget {
       this.setTaskDone,
       this.data})
       : super(key: key);
-
-  setData(data) {
-    this.data = data;
-  }
 
   @override
   _PPListViewState createState() => _PPListViewState();
@@ -36,6 +32,7 @@ class _PPListViewState extends State<PPListView> {
 
   initState() {
     super.initState();
+    print('subTasks.length: ' + widget.data['subTasks'].length.toString());
     currentUser = widget.data['currentUser'];
     title = currentUser['mainTask'];
     _controller = PageController(
@@ -49,7 +46,7 @@ class _PPListViewState extends State<PPListView> {
     List lastWeek = widget.data['lastWeek'];
     return Scaffold(
         appBar: ListAppBar(
-          () => goAbsent(currentUser['id']),
+          goAbsent,
           widget.logout,
           widget.showLogs,
           currentUser['points'],
@@ -110,7 +107,7 @@ class _PPListViewState extends State<PPListView> {
     });
   }
 
-  void goAbsent(bool absent) {
-    widget.setPresence(currentUser['id'], absent);
+  void goAbsent() {
+    widget.setPresence(currentUser);
   }
 }

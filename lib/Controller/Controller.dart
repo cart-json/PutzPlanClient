@@ -13,9 +13,11 @@ class _ControllerState extends State<Controller> {
   Model model;
 
   Future authenticated;
-  Future listData;
+  Future listDataFuture;
   Future loggedOut;
   Future logs;
+
+  Map listData;
 
   @override
   void initState() {
@@ -33,13 +35,21 @@ class _ControllerState extends State<Controller> {
 
   @override
   Widget build(BuildContext context) {
+    if (listData == null) {
+      return startingBuild(context);
+    }
+    return view.buildPutzListScreen(listData);
+  }
+
+  Widget startingBuild(BuildContext context) {
     return controllerFuture(authenticated, 'trying to authenticate...', (data) {
       if (!data) {
         return view.buildLogInScreen(evaluateAccessData);
       } else {
-        listData = model.getData();
-        return controllerFuture(listData, 'loading data...',
-            (data) => view.buildPutzListScreen(data));
+        if (listDataFuture == null) listDataFuture = model.getData();
+        return controllerFuture(listDataFuture, 'loading data...', (data) {
+          return view.buildPutzListScreen(data);
+        });
       }
     });
   }
@@ -78,9 +88,9 @@ class _ControllerState extends State<Controller> {
         });
   }
 
-  Future<void> refresh() async {
-    listData = model.getData();
-    setState(() {
+  Future refresh() async {
+    listData = await model.getData();
+    this.setState(() {
       this.build(context);
     });
   }

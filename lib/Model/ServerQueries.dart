@@ -58,7 +58,6 @@ class Server {
     var response;
     try {
       response = await dio.get("$_baseURL$query");
-      print(response.toString());
     } on DioError catch (e) {
       print(e);
     }

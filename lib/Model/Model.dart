@@ -88,6 +88,7 @@ class Model {
   ];
 
   Future getData() async {
+    //return Future.delayed(const Duration(seconds: 2), () => testData);
     var data = await ServerQueries.fetchData();
     return data;
   }
@@ -112,10 +113,12 @@ class Model {
   }
 
   Future update(int taskID) {
+    //return Future.delayed(const Duration(seconds: 2), () => {'failed': false});
     return ServerQueries.update(taskID);
   }
 
   Future authenticate() async {
+    //return Future.delayed(const Duration(seconds: 2), () => true);
     final prefs = await SharedPreferences.getInstance();
     final authKey = prefs.getString('authKey') ?? '0';
     if (authKey != '0') {
@@ -129,6 +132,7 @@ class Model {
   }
 
   Future evaluateAccessData(username, password) async {
+    //return Future.delayed(const Duration(seconds: 2), () => true);
     var replyJson = await ServerQueries.logIn(username, password);
     if (!replyJson['failed'] ?? true) {
       var authKey = replyJson['authKey'] ?? '0';
@@ -136,7 +140,7 @@ class Model {
       ServerQueries.authKey = authKey;
       prefs.setString('authKey', authKey);
     }
-    if (replyJson['failed'] ?? true) {}
+    return replyJson['failed'];
   }
 
   logout() async {

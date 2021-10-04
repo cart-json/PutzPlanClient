@@ -13,6 +13,8 @@ class View {
   final Function logout;
   final Function setTaskDone;
 
+  PPListView listView;
+
   View(
       {this.context,
       this.setPresence,
@@ -26,15 +28,8 @@ class View {
   }
 
   Widget buildPutzListScreen(Map<String, dynamic> data) {
-    var view = PPListView(
-        key: UniqueKey(),
-        logout: logout,
-        setPresence: requestSetPresence,
-        showLogs: showLogs,
-        refresh: refresh,
-        setTaskDone: requestTaskDone,
-        data: data);
-    return PPListView(
+    print('buildPutzListScreen');
+    return new PPListView(
         key: UniqueKey(),
         logout: logout,
         setPresence: requestSetPresence,

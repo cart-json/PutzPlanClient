@@ -39,7 +39,7 @@ class ListAppBar extends StatelessWidget implements PreferredSizeWidget {
               if (result == 1) {
                 logout();
               } else if (result == 0) {
-                goAbsent(absent);
+                goAbsent();
               } else if (result == 2) {
                 showLogs();
               }
