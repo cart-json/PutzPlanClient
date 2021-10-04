@@ -49,7 +49,7 @@ class ServerQueries {
 }
 
 class Server {
-  static final String _baseURL = "http://192.168.0.99:8500";
+  static final String _baseURL = "http://127.0.0.1:8500";
 
   static Future<Response<dynamic>> query(query) async {
     final Dio dio = new Dio();
